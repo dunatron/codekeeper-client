@@ -91,6 +91,14 @@ const COLUMN_HEADERS = [
     show: true,
     tableRenderKey: "th",
   },
+  {
+    id: "url",
+    numeric: false,
+    disablePadding: true,
+    label: "url",
+    show: true,
+    tableRenderKey: "th",
+  },
 
   // { id: "carbs", numeric: true, disablePadding: false, label: "Carbs (g)" },
   // { id: "protein", numeric: true, disablePadding: false, label: "Protein (g)" },
@@ -202,7 +210,7 @@ class SampleListContainer extends Component {
                 //   }
                 // })}
                 columnHeaders={COLUMN_HEADERS}
-                title="Bang bang !! Son of a bitch"
+                title="Table of Code Samples"
                 data={samplesToRender}
               />
               {samplesToRender.map((sample, index) => (

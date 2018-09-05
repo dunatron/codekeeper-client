@@ -1,6 +1,6 @@
 import React from "react"
 import { withStyles } from "@material-ui/core/styles"
-import MenuItem from "@material-ui/core/Menu"
+import MenuItem from "@material-ui/core/MenuItem/MenuItem"
 import FormControl from "@material-ui/core/FormControl"
 import InputLabel from "@material-ui/core/InputLabel"
 import Select from "@material-ui/core/Select"

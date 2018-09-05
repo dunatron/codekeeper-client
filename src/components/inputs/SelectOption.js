@@ -1,10 +1,20 @@
 import React from "react"
 import { withStyles } from "@material-ui//core/styles"
-import MenuItem from "@material-ui/core/Menu/Menu"
+import MenuItem from "@material-ui/core/MenuItem/MenuItem"
 import FormControl from "@material-ui/core/FormControl"
 import InputLabel from "@material-ui/core/InputLabel"
+import FormHelperText from "@material-ui/core/FormHelperText"
 import Select from "@material-ui/core/Select/Select"
 
+/**
+ *
+ * important Note for Heath: as sadly you are who will awake for the next 13 days.
+ * Comms are key: embed that!
+ * material is having problems with modal. noobs refactoring without testing.
+ * every modules hsould have ts
+ * there needs to be a way of checking each on its own and to see if it can logically solve itself,
+ *
+ */
 const styles = theme => ({
   root: {
     padding: theme.spacing.unit * 4,
@@ -52,25 +62,24 @@ const SelectOption = ({
   }
   return (
     <FormControl className={classes.formControl}>
-      <InputLabel htmlFor={selectID}>{label}</InputLabel>
       <Select
         value={value}
-        multiple
-        // onChange={this.handleChange("MethodID")}
-        onChange={e => handleChange(e.target.value)}
-        inputProps={{
-          name: selectID,
-          id: selectID,
-        }}>
+        onChange={this.handleChange}
+        displayEmpty
+        name="age"
+        className={classes.selectEmpty}>
+        <MenuItem value="">
+          <em>None</em>
+        </MenuItem>
         {options.map((d, i) => {
           return (
             <MenuItem key={i} value={d.value}>
-              {/* {d.name} */}
-              SOme label
+              {d.name}
             </MenuItem>
           )
         })}
       </Select>
+      <FormHelperText>Without label</FormHelperText>
     </FormControl>
   )
 }
