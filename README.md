@@ -2483,7 +2483,7 @@ In the future, we might start automatically compiling incompatible third-party m
 
 ## rise 
 
-[Kouji, Kenny, Tron , 2bc](https://www.google.com)
+[Kouji, Kenny, Tron , 2bc](http://www.animelyrics.com/anime/mazingerz/mazingerzen.htm)
 
 
 https://en.wikipedia.org/wiki/Hiragana
