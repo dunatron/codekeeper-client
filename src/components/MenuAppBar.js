@@ -1,8 +1,8 @@
 import React from "react"
 import PropTypes from "prop-types"
 import { AUTH_TOKEN } from "../constants"
-import { Link } from "react-router-dom"
 import { withRouter } from "react-router"
+import { Link } from "react-router-dom"
 import { withStyles } from "@material-ui/core/styles"
 import AppBar from "@material-ui/core/AppBar"
 import Toolbar from "@material-ui/core/Toolbar"
@@ -15,6 +15,8 @@ import FormControlLabel from "@material-ui/core/FormControlLabel"
 import FormGroup from "@material-ui/core/FormGroup"
 import MenuItem from "@material-ui/core/MenuItem"
 import Menu from "@material-ui/core/Menu"
+import { compose } from "react-apollo/index"
+import { Search } from "@material-ui/icons"
 
 const styles = {
   root: {
@@ -33,6 +35,12 @@ class MenuAppBar extends React.Component {
   state = {
     auth: true,
     anchorEl: null,
+  }
+
+  handlePageChange = url => {
+    console.log(url)
+    this.handleClose()
+    this.props.history.push(url)
   }
 
   handleChange = event => {
@@ -103,29 +111,21 @@ class MenuAppBar extends React.Component {
                   }}
                   open={open}
                   onClose={this.handleClose}>
-                  <MenuItem onClick={this.handleClose}>
-                    <Link to="/search" className="ml1 no-underline black">
-                      search
-                    </Link>
+                  <MenuItem onClick={() => this.handlePageChange("/search")}>
+                    Search
                   </MenuItem>
 
-                  <MenuItem onClick={this.handleClose}>
-                    <Link to="/top" className="ml1 no-underline black">
-                      top
-                    </Link>
+                  <MenuItem onClick={() => this.handlePageChange("/top")}>
+                    Top
                   </MenuItem>
 
-                  <MenuItem onClick={this.handleClose}>
-                    <Link to="/" className="ml1 no-underline black">
-                      new
-                    </Link>
+                  <MenuItem onClick={() => this.handlePageChange("/")}>
+                    New
                   </MenuItem>
 
                   {authToken && (
-                    <MenuItem onClick={this.handleClose}>
-                      <Link to="/create" className="ml1 no-underline black">
-                        submit
-                      </Link>
+                    <MenuItem onClick={() => this.handlePageChange("/create")}>
+                      Create
                     </MenuItem>
                   )}
 
@@ -140,10 +140,8 @@ class MenuAppBar extends React.Component {
                       Logout
                     </MenuItem>
                   ) : (
-                    <MenuItem onClick={this.handleClose}>
-                      <Link to="/login" className="ml1 no-underline black">
-                        login
-                      </Link>
+                    <MenuItem onClick={() => this.handlePageChange("/login")}>
+                      Login
                     </MenuItem>
                   )}
                 </Menu>
@@ -160,4 +158,6 @@ MenuAppBar.propTypes = {
   classes: PropTypes.object.isRequired,
 }
 
-export default withStyles(styles)(MenuAppBar)
+// export default MenuAppBar
+
+export default withRouter(compose(withStyles(styles))(MenuAppBar))

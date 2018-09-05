@@ -3,6 +3,7 @@ import { Mutation } from "react-apollo"
 import gql from "graphql-tag"
 import { FEED_QUERY } from "./SampleList"
 import { SAMPLES_PER_PAGE } from "../constants"
+import { withRouter } from "react-router"
 
 const POST_MUTATION = gql`
   mutation PostMutation($description: String!, $url: String!) {
@@ -66,4 +67,6 @@ class CreateSample extends Component {
   }
 }
 
-export default CreateSample
+// export default CreateSample
+
+export default withRouter(CreateSample)
