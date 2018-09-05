@@ -1,5 +1,8 @@
 import React from "react"
 import PropTypes from "prop-types"
+import { AUTH_TOKEN } from "../constants"
+import { Link } from "react-router-dom"
+import { withRouter } from "react-router"
 import { withStyles } from "@material-ui/core/styles"
 import AppBar from "@material-ui/core/AppBar"
 import Toolbar from "@material-ui/core/Toolbar"
@@ -45,6 +48,7 @@ class MenuAppBar extends React.Component {
   }
 
   render() {
+    const authToken = localStorage.getItem(AUTH_TOKEN)
     const { classes } = this.props
     const { auth, anchorEl } = this.state
     const open = Boolean(anchorEl)
@@ -99,8 +103,49 @@ class MenuAppBar extends React.Component {
                   }}
                   open={open}
                   onClose={this.handleClose}>
-                  <MenuItem onClick={this.handleClose}>Profile</MenuItem>
+                  <MenuItem onClick={this.handleClose}>
+                    <Link to="/search" className="ml1 no-underline black">
+                      search
+                    </Link>
+                  </MenuItem>
+
+                  <MenuItem onClick={this.handleClose}>
+                    <Link to="/top" className="ml1 no-underline black">
+                      top
+                    </Link>
+                  </MenuItem>
+
+                  <MenuItem onClick={this.handleClose}>
+                    <Link to="/" className="ml1 no-underline black">
+                      new
+                    </Link>
+                  </MenuItem>
+
+                  {authToken && (
+                    <MenuItem onClick={this.handleClose}>
+                      <Link to="/create" className="ml1 no-underline black">
+                        submit
+                      </Link>
+                    </MenuItem>
+                  )}
+
                   <MenuItem onClick={this.handleClose}>My account</MenuItem>
+
+                  {authToken ? (
+                    <MenuItem
+                      onClick={() => {
+                        localStorage.removeItem(AUTH_TOKEN)
+                        this.props.history.push(`/`)
+                      }}>
+                      Logout
+                    </MenuItem>
+                  ) : (
+                    <MenuItem onClick={this.handleClose}>
+                      <Link to="/login" className="ml1 no-underline black">
+                        login
+                      </Link>
+                    </MenuItem>
+                  )}
                 </Menu>
               </div>
             )}

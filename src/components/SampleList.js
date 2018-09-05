@@ -1,14 +1,14 @@
 import React, { Component, Fragment } from "react"
-import Link from "./Link"
+import Sample from "./Sample"
 import { Query } from "react-apollo"
 import gql from "graphql-tag"
-import { AUTH_TOKEN, LINKS_PER_PAGE } from "../constants"
+import { AUTH_TOKEN, SAMPLES_PER_PAGE } from "../constants"
 import { timeDifferenceForDate } from "../utils"
 
 export const FEED_QUERY = gql`
-  query FeedQuery($first: Int, $skip: Int, $orderBy: LinkOrderByInput) {
+  query FeedQuery($first: Int, $skip: Int, $orderBy: SampleOrderByInput) {
     feed(first: $first, skip: $skip, orderBy: $orderBy) {
-      links {
+      samples {
         id
         createdAt
         url
@@ -29,9 +29,9 @@ export const FEED_QUERY = gql`
   }
 `
 
-const NEW_LINKS_SUBSCRIPTION = gql`
+const NEW_SAMPLES_SUBSCRIPTION = gql`
   subscription {
-    newLink {
+    newSample {
       node {
         id
         url
@@ -57,7 +57,7 @@ const NEW_VOTES_SUBSCRIPTION = gql`
     newVote {
       node {
         id
-        link {
+        sample {
           id
           url
           description
@@ -81,45 +81,45 @@ const NEW_VOTES_SUBSCRIPTION = gql`
   }
 `
 
-class LinkList extends Component {
+class SampleList extends Component {
   _getQueryVariables = () => {
     const isNewPage = this.props.location.pathname.includes("new")
     const page = parseInt(this.props.match.params.page, 10)
 
-    const skip = isNewPage ? (page - 1) * LINKS_PER_PAGE : 0
-    const first = isNewPage ? LINKS_PER_PAGE : 100
+    const skip = isNewPage ? (page - 1) * SAMPLES_PER_PAGE : 0
+    const first = isNewPage ? SAMPLES_PER_PAGE : 100
     const orderBy = isNewPage ? "createdAt_DESC" : null
     return { first, skip, orderBy }
   }
 
-  _updateCacheAfterVote = (store, createVote, linkId) => {
+  _updateCacheAfterVote = (store, createVote, sampleId) => {
     const isNewPage = this.props.location.pathname.includes("new")
     const page = parseInt(this.props.match.params.page, 10)
 
-    const skip = isNewPage ? (page - 1) * LINKS_PER_PAGE : 0
-    const first = isNewPage ? LINKS_PER_PAGE : 100
+    const skip = isNewPage ? (page - 1) * SAMPLES_PER_PAGE : 0
+    const first = isNewPage ? SAMPLES_PER_PAGE : 100
     const orderBy = isNewPage ? "createdAt_DESC" : null
     const data = store.readQuery({
       query: FEED_QUERY,
       variables: { first, skip, orderBy },
     })
 
-    const votedLink = data.feed.links.find(link => link.id === linkId)
-    votedLink.votes = createVote.link.votes
+    const votedSample = data.feed.samples.find(sample => sample.id === sampleId)
+    votedSample.votes = createVote.sample.votes
     store.writeQuery({ query: FEED_QUERY, data })
   }
 
-  _subscribeToNewLinks = subscribeToMore => {
+  _subscribeToNewSamples = subscribeToMore => {
     subscribeToMore({
-      document: NEW_LINKS_SUBSCRIPTION,
+      document: NEW_SAMPLES_SUBSCRIPTION,
       updateQuery: (prev, { subscriptionData }) => {
         if (!subscriptionData.data) return prev
-        const newLink = subscriptionData.data.newLink.node
+        const newSample = subscriptionData.data.newSample.node
 
         return Object.assign({}, prev, {
           feed: {
-            links: [newLink, ...prev.feed.links],
-            count: prev.feed.links.length + 1,
+            samples: [newSample, ...prev.feed.samples],
+            count: prev.feed.samples.length + 1,
             __typename: prev.feed.__typename,
           },
         })
@@ -133,19 +133,19 @@ class LinkList extends Component {
     })
   }
 
-  _getLinksToRender = data => {
+  _getSamplesToRender = data => {
     const isNewPage = this.props.location.pathname.includes("new")
     if (isNewPage) {
-      return data.feed.links
+      return data.feed.samples
     }
-    const rankedLinks = data.feed.links.slice()
-    rankedLinks.sort((l1, l2) => l2.votes.length - l1.votes.length)
-    return rankedLinks
+    const rankedSamples = data.feed.samples.slice()
+    rankedSamples.sort((l1, l2) => l2.votes.length - l1.votes.length)
+    return rankedSamples
   }
 
   _nextPage = data => {
     const page = parseInt(this.props.match.params.page, 10)
-    if (page <= data.feed.count / LINKS_PER_PAGE) {
+    if (page <= data.feed.count / SAMPLES_PER_PAGE) {
       const nextPage = page + 1
       this.props.history.push(`/new/${nextPage}`)
     }
@@ -166,21 +166,21 @@ class LinkList extends Component {
           if (loading) return <div>Fetching</div>
           if (error) return <div>Error</div>
 
-          this._subscribeToNewLinks(subscribeToMore)
+          this._subscribeToNewSamples(subscribeToMore)
           this._subscribeToNewVotes(subscribeToMore)
 
-          const linksToRender = this._getLinksToRender(data)
+          const samplesToRender = this._getSamplesToRender(data)
           const isNewPage = this.props.location.pathname.includes("new")
           const pageIndex = this.props.match.params.page
-            ? (this.props.match.params.page - 1) * LINKS_PER_PAGE
+            ? (this.props.match.params.page - 1) * SAMPLES_PER_PAGE
             : 0
 
           return (
             <Fragment>
-              {linksToRender.map((link, index) => (
-                <Link
-                  key={link.id}
-                  link={link}
+              {samplesToRender.map((sample, index) => (
+                <Sample
+                  key={sample.id}
+                  sample={sample}
                   index={index + pageIndex}
                   updateStoreAfterVote={this._updateCacheAfterVote}
                 />
@@ -203,4 +203,4 @@ class LinkList extends Component {
   }
 }
 
-export default LinkList
+export default SampleList

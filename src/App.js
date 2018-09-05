@@ -5,8 +5,8 @@ import logo from "./logo.svg"
 import "./App.css"
 import Login from "./components/Login"
 import MenuAppBar from "./components/MenuAppBar"
-import LinkList from "./components/LinkList"
-import CreateLink from "./components/CreateLink"
+import SampleList from "./components/SampleList"
+import CreateSample from "./components/CreateSample"
 import Search from "./components/Search"
 
 // localStorage.setItem(
@@ -18,15 +18,16 @@ class App extends Component {
   render() {
     return (
       <div className="center w85">
-        <Header />
+        {/* <Header /> */}
+        <MenuAppBar />
         <div className="ph3 pv1 background-gray">
           <Switch>
             <Route exact path="/" render={() => <Redirect to="/new/1" />} />
-            <Route exact path="/create" component={CreateLink} />
+            <Route exact path="/create" component={CreateSample} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/search" component={Search} />
-            <Route exact path="/top" component={LinkList} />
-            <Route exact path="/new/:page" component={LinkList} />
+            <Route exact path="/top" component={SampleList} />
+            <Route exact path="/new/:page" component={SampleList} />
           </Switch>
         </div>
       </div>

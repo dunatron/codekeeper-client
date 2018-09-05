@@ -1,12 +1,12 @@
 import React, { Component } from "react"
 import { withApollo } from "react-apollo"
 import gql from "graphql-tag"
-import Link from "./Link"
+import Sample from "./Sample"
 
 const FEED_SEARCH_QUERY = gql`
   query FeedSearchQuery($filter: String!) {
     feed(filter: $filter) {
-      links {
+      samples {
         id
         url
         description
@@ -28,7 +28,7 @@ const FEED_SEARCH_QUERY = gql`
 
 class Search extends Component {
   state = {
-    links: [],
+    samples: [],
     filter: "",
   }
 
@@ -43,8 +43,8 @@ class Search extends Component {
           />
           <button onClick={() => this._executeSearch()}>OK</button>
         </div>
-        {this.state.links.map((link, index) => (
-          <Link key={link.id} link={link} index={index} />
+        {this.state.samples.map((sample, index) => (
+          <Sample key={sample.id} sample={sample} index={index} />
         ))}
       </div>
     )
@@ -56,8 +56,8 @@ class Search extends Component {
       query: FEED_SEARCH_QUERY,
       variables: { filter },
     })
-    const links = result.data.feed.links
-    this.setState({ links })
+    const samples = result.data.feed.samples
+    this.setState({ samples })
   }
 }
 

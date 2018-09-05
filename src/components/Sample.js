@@ -5,10 +5,10 @@ import { AUTH_TOKEN } from "../constants"
 import { timeDifferenceForDate } from "../utils"
 
 const VOTE_MUTATION = gql`
-  mutation VoteMutation($linkId: ID!) {
-    vote(linkId: $linkId) {
+  mutation VoteMutation($sampleId: ID!) {
+    vote(sampleId: $sampleId) {
       id
-      link {
+      sample {
         votes {
           id
           user {
@@ -23,7 +23,7 @@ const VOTE_MUTATION = gql`
   }
 `
 
-class Link extends Component {
+class Sample extends Component {
   render() {
     const authToken = localStorage.getItem(AUTH_TOKEN)
     return (
@@ -33,9 +33,13 @@ class Link extends Component {
           {authToken && (
             <Mutation
               mutation={VOTE_MUTATION}
-              variables={{ linkId: this.props.link.id }}
+              variables={{ sampleId: this.props.sample.id }}
               update={(store, { data: { vote } }) =>
-                this.props.updateStoreAfterVote(store, vote, this.props.link.id)
+                this.props.updateStoreAfterVote(
+                  store,
+                  vote,
+                  this.props.sample.id
+                )
               }>
               {voteMutation => (
                 <div className="ml1 gray f11" onClick={voteMutation}>
@@ -47,14 +51,14 @@ class Link extends Component {
         </div>
         <div className="ml1">
           <div>
-            {this.props.link.description} ({this.props.link.url})
+            {this.props.sample.description} ({this.props.sample.url})
           </div>
           <div className="f6 lh-copy gray">
-            {this.props.link.votes.length} votes | by{" "}
-            {this.props.link.postedBy
-              ? this.props.link.postedBy.name
+            {this.props.sample.votes.length} votes | by{" "}
+            {this.props.sample.postedBy
+              ? this.props.sample.postedBy.name
               : "Unknown"}{" "}
-            {timeDifferenceForDate(this.props.link.createdAt)}
+            {timeDifferenceForDate(this.props.sample.createdAt)}
           </div>
         </div>
       </div>
@@ -62,4 +66,4 @@ class Link extends Component {
   }
 }
 
-export default Link
+export default Sample

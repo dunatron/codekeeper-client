@@ -1,8 +1,8 @@
 import React, { Component } from "react"
 import { Mutation } from "react-apollo"
 import gql from "graphql-tag"
-import { FEED_QUERY } from "./LinkList"
-import { LINKS_PER_PAGE } from "../constants"
+import { FEED_QUERY } from "./SampleList"
+import { SAMPLES_PER_PAGE } from "../constants"
 
 const POST_MUTATION = gql`
   mutation PostMutation($description: String!, $url: String!) {
@@ -14,7 +14,7 @@ const POST_MUTATION = gql`
   }
 `
 
-class CreateLink extends Component {
+class CreateSample extends Component {
   state = {
     description: "",
     url: "",
@@ -30,14 +30,14 @@ class CreateLink extends Component {
             value={description}
             onChange={e => this.setState({ description: e.target.value })}
             type="text"
-            placeholder="A description for the link"
+            placeholder="A description for the code sample"
           />
           <input
             className="mb2"
             value={url}
             onChange={e => this.setState({ url: e.target.value })}
             type="text"
-            placeholder="The URL for the link"
+            placeholder="The URL for the code sample"
           />
         </div>
         <Mutation
@@ -45,14 +45,14 @@ class CreateLink extends Component {
           variables={{ description, url }}
           onCompleted={() => this.props.history.push("/new/1")}
           update={(store, { data: { post } }) => {
-            const first = LINKS_PER_PAGE
+            const first = SAMPLES_PER_PAGE
             const skip = 0
             const orderBy = "createdAt_DESC"
             const data = store.readQuery({
               query: FEED_QUERY,
               variables: { first, skip, orderBy },
             })
-            data.feed.links.unshift(post)
+            data.feed.samples.unshift(post)
             store.writeQuery({
               query: FEED_QUERY,
               data,
@@ -66,4 +66,4 @@ class CreateLink extends Component {
   }
 }
 
-export default CreateLink
+export default CreateSample
