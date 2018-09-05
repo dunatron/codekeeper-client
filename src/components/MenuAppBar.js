@@ -2,7 +2,6 @@ import React from "react"
 import PropTypes from "prop-types"
 import { AUTH_TOKEN } from "../constants"
 import { withRouter } from "react-router"
-import { Link } from "react-router-dom"
 import { withStyles } from "@material-ui/core/styles"
 import AppBar from "@material-ui/core/AppBar"
 import Toolbar from "@material-ui/core/Toolbar"
@@ -16,7 +15,6 @@ import FormGroup from "@material-ui/core/FormGroup"
 import MenuItem from "@material-ui/core/MenuItem"
 import Menu from "@material-ui/core/Menu"
 import { compose } from "react-apollo/index"
-import { Search } from "@material-ui/icons"
 
 const styles = {
   root: {
@@ -112,6 +110,10 @@ class MenuAppBar extends React.Component {
                   open={open}
                   onClose={this.handleClose}>
                   <MenuItem onClick={() => this.handlePageChange("/search")}>
+                    Search
+                  </MenuItem>
+
+                  <MenuItem onClick={() => this.handlePageChange("/table")}>
                     Search
                   </MenuItem>
 
