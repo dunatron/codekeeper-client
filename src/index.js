@@ -14,6 +14,12 @@ import { split } from "apollo-link"
 import { WebSocketLink } from "apollo-link-ws"
 import { getMainDefinition } from "apollo-utilities"
 
+import customTheme from "./theme"
+import MuiThemeProvider from "@material-ui/core/styles/MuiThemeProvider"
+import { createMuiTheme } from "@material-ui/core/styles"
+
+const muiTheme = createMuiTheme(customTheme)
+
 const httpLink = createHttpLink({
   uri: "http://localhost:4000",
 })
@@ -55,7 +61,9 @@ const client = new ApolloClient({
 ReactDOM.render(
   <BrowserRouter>
     <ApolloProvider client={client}>
-      <App />
+      <MuiThemeProvider theme={muiTheme}>
+        <App />
+      </MuiThemeProvider>
     </ApolloProvider>
   </BrowserRouter>,
   document.getElementById("root")

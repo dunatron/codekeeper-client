@@ -36,7 +36,6 @@ class MenuAppBar extends React.Component {
   }
 
   handlePageChange = url => {
-    console.log(url)
     this.handleClose()
     this.props.history.push(url)
   }

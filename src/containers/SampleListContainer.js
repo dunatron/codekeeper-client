@@ -1,10 +1,19 @@
 import React, { Component, Fragment } from "react"
+import { graphql, compose, withApollo } from "react-apollo"
+import { connect } from "react-redux"
 import Sample from "../components/Sample"
 import { Query } from "react-apollo"
 import gql from "graphql-tag"
 import { AUTH_TOKEN, SAMPLES_PER_PAGE } from "../constants"
 import { timeDifferenceForDate } from "../utils"
 import SuperTable from "../components/SuperTable"
+import { VOTE_MUTATION } from "../components/Sample"
+import Icon from "@material-ui/core/Icon"
+import IconButton from "@material-ui/core/IconButton"
+import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart"
+import ThumbUpSharpIcon from "@material-ui/icons/ThumbUpSharp"
+import DialogPopup from "../components/DialogPopup"
+import SnackBar from "../components/SnackBar"
 
 export const FEED_QUERY = gql`
   query FeedQuery($first: Int, $skip: Int, $orderBy: SampleOrderByInput) {
@@ -82,6 +91,14 @@ const NEW_VOTES_SUBSCRIPTION = gql`
   }
 `
 
+// const HomeIcon = props => {
+//   return (
+//     <SvgIcon {...props}>
+//       <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+//     </SvgIcon>
+//   )
+// }
+
 const COLUMN_HEADERS = [
   {
     id: "description",
@@ -97,6 +114,62 @@ const COLUMN_HEADERS = [
     disablePadding: true,
     label: "url",
     show: true,
+    tableRenderKey: "th",
+  },
+  {
+    id: "createdAt",
+    numeric: false,
+    disablePadding: true,
+    label: "created at ",
+    show: true,
+    tableRenderKey: "th",
+  },
+  // {
+  //   id: "postedBy",
+  //   numeric: false,
+  //   disablePadding: true,
+  //   label: "posted by",
+  //   show: true,
+  //   type: "object",
+  //   tableRenderKey: "th",
+  // },
+
+  {
+    id: "postedBy",
+    numeric: false,
+    disablePadding: true,
+    label: "posted by",
+    show: true,
+    type: "deep",
+    found: "postedBy.name",
+    tableRenderKey: "th",
+  },
+
+  {
+    id: "votes", //votes.id
+    numeric: false,
+    disablePadding: true,
+    label: "Votes ",
+    show: true,
+    type: "numberOfObj",
+    found: "votes",
+    tableRenderKey: "th",
+  },
+
+  {
+    id: "upVote", //votes.id
+    numeric: false,
+    disablePadding: true,
+    label: "Upvote ",
+    show: false,
+    type: "btnFunc",
+    icon: (
+      <IconButton color="primary" aria-label="Add to shopping cart">
+        <ThumbUpSharpIcon />
+      </IconButton>
+    ),
+    funcName: "upVote",
+    found: "votes",
     tableRenderKey: "th",
   },
 
@@ -182,6 +255,53 @@ class SampleListContainer extends Component {
     }
   }
 
+  executeFunctionByName = (functionName, dataObj /*, args */) => {
+    switch (functionName) {
+      case "testFunc":
+        this.testFunc()
+        break
+      case "helloWorld":
+        this.helloWorld()
+      case "upVote":
+        this.upVote(dataObj.id)
+        break
+    }
+  }
+
+  testFunc = () => {
+    console.log("GOD LIKE")
+  }
+
+  helloWorld = () => {
+    alert("HELLO WORLD!")
+  }
+
+  upVote = async id => {
+    try {
+      const upVoteData = await this.props.upVoteMutation({
+        variables: {
+          sampleId: id,
+        },
+      })
+    } catch (e) {
+      // return <SnackBar message="PLEASE" />
+      alert(e)
+    }
+
+    // console.log("upVoteData ", upVoteData)
+
+    // if (upVoteData.errors) {
+    //   upVoteData.errors.map((error, idx) => {
+    //     alert(error.message)
+    //     return <SnackBar message="PLEASE" />
+    //   })
+    // }
+
+    // console.log("upVoteData ", upVoteData)
+
+    //return
+  }
+
   render() {
     return (
       <Query query={FEED_QUERY} variables={this._getQueryVariables()}>
@@ -192,26 +312,32 @@ class SampleListContainer extends Component {
           this._subscribeToNewSamples(subscribeToMore)
           this._subscribeToNewVotes(subscribeToMore)
 
+          console.log("Here is data ", data)
+
           const samplesToRender = this._getSamplesToRender(data)
           const isNewPage = this.props.location.pathname.includes("new")
           const pageIndex = this.props.match.params.page
             ? (this.props.match.params.page - 1) * SAMPLES_PER_PAGE
             : 0
-
-          console.log("THE SAMPLES ", samplesToRender)
-
           return (
             <Fragment>
+              <Icon>add_circle</Icon>
+              <IconButton color="primary" aria-label="Add to shopping cart">
+                <AddShoppingCartIcon />
+              </IconButton>
+              <DialogPopup
+                header="Event Image"
+                content="Please upload your event image by dragging it into the draggable area
+or by clicking the draggable area and choosing your image"
+              />
+              {/* <SnackBar /> */}
               <SuperTable
-                // notes={MethodNotes.map((note, idx) => {
-                //   return {
-                //     ...note,
-                //     id: idx,
-                //   }
-                // })}
                 columnHeaders={COLUMN_HEADERS}
                 title="Table of Code Samples"
                 data={samplesToRender}
+                executeFunc={(funcName, obj) => {
+                  this.executeFunctionByName(funcName, obj)
+                }}
               />
               {samplesToRender.map((sample, index) => (
                 <Sample
@@ -239,4 +365,24 @@ class SampleListContainer extends Component {
   }
 }
 
-export default SampleListContainer
+// export default SampleListContainer
+
+const UP_VOTE_SAMPLE_MUTATION = gql`
+  mutation addEventImage($eventID: ID!, $imgSrc: String!) {
+    addEventImage(eventID: $eventID, imgSrc: $imgSrc) {
+      Title
+      EventImages {
+        edges {
+          node {
+            ID
+          }
+        }
+      }
+    }
+  }
+`
+
+export default compose(
+  graphql(VOTE_MUTATION, { name: "upVoteMutation" }),
+  withApollo
+)(SampleListContainer)

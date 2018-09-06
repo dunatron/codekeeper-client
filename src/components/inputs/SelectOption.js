@@ -6,15 +6,6 @@ import InputLabel from "@material-ui/core/InputLabel"
 import FormHelperText from "@material-ui/core/FormHelperText"
 import Select from "@material-ui/core/Select/Select"
 
-/**
- *
- * important Note for Heath: as sadly you are who will awake for the next 13 days.
- * Comms are key: embed that!
- * material is having problems with modal. noobs refactoring without testing.
- * every modules hsould have ts
- * there needs to be a way of checking each on its own and to see if it can logically solve itself,
- *
- */
 const styles = theme => ({
   root: {
     padding: theme.spacing.unit * 4,
@@ -52,25 +43,22 @@ const styles = theme => ({
 const SelectOption = ({
   classes,
   value,
+  name,
   options,
   label,
   selectID,
+  helperText,
   handleChange,
 }) => {
-  {
-    console.log("OUR OPTIONS ", options)
-  }
   return (
     <FormControl className={classes.formControl}>
+      {label && <InputLabel htmlFor={selectID}>{label}</InputLabel>}
       <Select
         value={value}
-        onChange={this.handleChange}
+        onChange={e => handleChange(e.target.value)}
         displayEmpty
-        name="age"
+        name={name}
         className={classes.selectEmpty}>
-        <MenuItem value="">
-          <em>None</em>
-        </MenuItem>
         {options.map((d, i) => {
           return (
             <MenuItem key={i} value={d.value}>
@@ -79,7 +67,7 @@ const SelectOption = ({
           )
         })}
       </Select>
-      <FormHelperText>Without label</FormHelperText>
+      {helperText && <FormHelperText>Without label</FormHelperText>}
     </FormControl>
   )
 }

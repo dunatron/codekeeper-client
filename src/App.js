@@ -10,6 +10,8 @@ import CreateSample from "./components/CreateSample"
 import SampleListContainer from "./containers/SampleListContainer"
 import SuperTable from "./components/SuperTable"
 import Search from "./components/Search"
+// Pages
+import HomePage from "./pages/HomePage"
 
 // localStorage.setItem(
 //   "jwt",
@@ -24,7 +26,8 @@ class App extends Component {
         <MenuAppBar />
         <div className="ph3 pv1 background-gray">
           <Switch>
-            <Route exact path="/" render={() => <Redirect to="/new/1" />} />
+            {/* <Route exact path="/" render={() => <Redirect to="/new/1" />} /> */}
+            <Route exact path="/" component={HomePage} />
             <Route exact path="/table" component={SampleListContainer} />
             <Route exact path="/create" component={CreateSample} />
             <Route exact path="/login" component={Login} />

@@ -157,6 +157,7 @@ const FilterBar = props => {
           }
         })}
         handleChange={values => props.updateShowValues(values)}
+        // handleChange={values => props.updateShowValues(values)}
       />
       <SelectOption
         label="Column Filter"
@@ -259,6 +260,16 @@ const styles = theme => ({
     overflowX: "auto",
   },
 })
+
+const extractDeepValue = (str, dataObj) => {
+  // cellHeader.found
+  //                                     .split(".")
+  //                                     .reduce((o, i) => o[i], n)
+
+  const value = str.split(".").reduce((o, i) => o[i], dataObj)
+
+  return value ? value : ""
+}
 
 const CellContent = ({ content, limitChar }) => {
   if (limitChar) {
@@ -368,32 +379,17 @@ class SuperTable extends React.Component {
   }
 
   updateShowValues = values => {
-    let columnHeaders = this.state.columnHeaders
+    const columnHeaders = this.state.columnHeaders
 
-    columnHeaders.map(header => {
+    const updated = columnHeaders.map(header => {
       return {
         ...header,
         show: values.includes(header.id),
       }
     })
-
     this.setState({
-      columnHeaders: columnHeaders,
+      columnHeaders: updated,
     })
-
-    // for (const val of values) {
-    //   console.log("updateShowValues val ", val)
-    //   const headerIndex = columnHeaders.findIndex(function(c) {
-    //     return c.id === val
-    //   })
-    //   console.log(" Found The right State Index I guess ", headerIndex)
-    //   let columnHeaderData = columnHeaders[headerIndex]
-    //   columnHeaderData.show = true
-    //   columnHeaders.splice(headerIndex, 1, columnHeaderData)
-    //   this.setState({
-    //     columnHeaders: columnHeaders,
-    //   })
-    // }
   }
 
   updateSearch = val => {
@@ -489,8 +485,90 @@ class SuperTable extends React.Component {
                         {this.state.columnHeaders
                           .filter(header => header.show === true)
                           .map((cellHeader, idx) => {
+                            if (cellHeader.type === "btnFunc") {
+                              return (
+                                <TableCell
+                                  key={idx}
+                                  numeric={cellHeader.numeric}
+                                  style={{ minWidth: "90px" }}
+                                  component={cellHeader.tableRenderKey}
+                                  padding={idx === 0 ? "dense" : "dense"}
+                                  {...cellHeader.tableRenderProps}>
+                                  <div
+                                    onClick={() =>
+                                      this.props.executeFunc(
+                                        cellHeader.funcName,
+                                        n
+                                      )
+                                    }>
+                                    BUTTON
+                                    {cellHeader.icon}
+                                  </div>
+                                </TableCell>
+                              )
+                            }
+                            if (cellHeader.type === "btn") {
+                              return (
+                                <div>
+                                  BUTTON
+                                  {cellHeader.icon}
+                                </div>
+                              )
+                            }
+
+                            if (cellHeader.type === "numberOfObj") {
+                              //1. use const to extract deep value
+                              // just get the number of items
+                              const length = extractDeepValue(
+                                cellHeader.found,
+                                n
+                              ).length
+                              console.log("The length ", length)
+                              return (
+                                <TableCell
+                                  key={idx}
+                                  numeric={cellHeader.numeric}
+                                  style={{ minWidth: "90px" }}
+                                  component={cellHeader.tableRenderKey}
+                                  padding={idx === 0 ? "dense" : "dense"}
+                                  {...cellHeader.tableRenderProps}>
+                                  <CellContent
+                                    content={length}
+                                    limitChar={cellHeader.limitChar}
+                                  />
+                                </TableCell>
+                              )
+                            }
+
+                            if (cellHeader.type === "deep") {
+                              return (
+                                <TableCell
+                                  key={idx}
+                                  numeric={cellHeader.numeric}
+                                  style={{ minWidth: "90px" }}
+                                  component={cellHeader.tableRenderKey}
+                                  padding={idx === 0 ? "dense" : "dense"}
+                                  {...cellHeader.tableRenderProps}>
+                                  {/* <CellContent
+                                    content={cellHeader.found
+                                      .split(".")
+                                      .reduce((o, i) => o[i], n)}
+                                    limitChar={cellHeader.limitChar}
+                                  /> */}
+
+                                  <CellContent
+                                    content={extractDeepValue(
+                                      cellHeader.found,
+                                      n
+                                    )}
+                                    limitChar={cellHeader.limitChar}
+                                  />
+                                </TableCell>
+                              )
+                            }
                             return (
                               <TableCell
+                                key={idx}
                                 numeric={cellHeader.numeric}
                                 style={{ minWidth: "90px" }}
                                 component={cellHeader.tableRenderKey}

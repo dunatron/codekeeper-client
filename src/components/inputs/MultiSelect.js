@@ -53,7 +53,6 @@ const MultiSelect = ({
       <Select
         multiple={true}
         value={values}
-        // onChange={this.handleChange("MethodID")}
         onChange={e => handleChange(e.target.value)}
         inputProps={{
           name: selectID,

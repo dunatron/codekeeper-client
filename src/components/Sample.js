@@ -4,7 +4,7 @@ import gql from "graphql-tag"
 import { AUTH_TOKEN } from "../constants"
 import { timeDifferenceForDate } from "../utils"
 
-const VOTE_MUTATION = gql`
+export const VOTE_MUTATION = gql`
   mutation VoteMutation($sampleId: ID!) {
     vote(sampleId: $sampleId) {
       id
